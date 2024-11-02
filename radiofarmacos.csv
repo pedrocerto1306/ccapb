@@ -1,0 +1,8 @@
+id,nome,tipo,doseConcentracao,tempoInicioMedida,tempoMeiaVida,constanteDecaimento,lote,laboratorio,contraIndicacao
+1,teste,A,1.0,0.02,1000,0.3,1,lab_x,
+2,teste,A,1.1,0.03,1001,0.4,2,lab_x,
+3,teste,A,1.2,0.04,1002,0.5,3,lab_x,
+4,teste,A,1.3,0.05,1003,0.6,4,lab_x,1
+5,teste,A,1.4,0.06,1004,0.7,5,lab_x,
+6,teste,A,1.5,0.07,1005,0.8,6,lab_x,1
+7,teste,A,1.6,0.08,1006,0.9,7,lab_x,
