@@ -1,8 +1,10 @@
 import pandas as pd
 import string
+from models.model_base import Model_Base
 
-class Radiofarmaco():
-  def __init__(self, id:int, nome:string, tipo:string, doseConcentracao:float, tempoInicioMedida:float, tempoMeiaVida:float, constanteDecaimento:float, lote:string, laboratorio:string, contraIndicacao:string):
+class Radiofarmaco(Model_Base):
+  def __init__(self, id:int, nome:string, tipo:string, doseConcentracao:float, tempoInicioMedida:float, tempoMeiaVida:float, constanteDecaimento:float, lote:string, laboratorio:string, contraIndicacao:string, df : pd.DataFrame):
+    super().__init__(df)
     self.id = id
     self.nome = nome
     self.tipo = tipo
@@ -18,6 +20,7 @@ class Radiofarmaco():
         return 0
         
     def addRadioFarmaco(self, dfRadio:pd.DataFrame):
+        #TODO: Migrar para arquitetura MVC criada
         registroRadiofarmaco = { 
             'id': self.id,
             'nome': self.nome, 
@@ -31,5 +34,3 @@ class Radiofarmaco():
         }
         dfRadio._append(registroRadiofarmaco, ignore_index=True)
         return dfRadio
-        
-    
