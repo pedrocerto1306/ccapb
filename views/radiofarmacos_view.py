@@ -1,25 +1,50 @@
+import os
 import customtkinter as ctk
+import pandas as pd
+
+from models.radiofarmaco_model import Radiofarmaco_Model
+from controllers.controller_base import Controller_Base
 from views.base_view import Base_View
 
-ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("blue")
-
-#dimensões da tela:
-largura, altura = 1080, 720
-
-class Radiofarmacos_View(ctk.CTk, Base_View):
+class Radiofarmacos_View(ctk.CTkFrame, Base_View):
     def __init__(self, parent):
         super().__init__(parent)
-        # self.title("Sistema de gerenciamento de doses de radiofármacos")
-        # self.geometry("1080x720")
+        # self.title("Cadastro de Paciente")
+        # self.geometry("400x400")
+        caminho_atual = os.path.dirname(__file__)
+        caminho_dados = os.path.join(caminho_atual, "..", "data", "atendimentos.csv")
+        self.controller = Controller_Base(pd.read_csv(caminho_dados), caminho_dados)
 
-        #Rótulo e input de texto para o Nome do radiofármaco
-        self.nameLabel = ctk.CTkLabel(self, text="Nome radiofármaco")
-        self.nameLabel.grid(row=0, column=0, padx=20, pady=20, sticky="ew")
+        # Armazena os campos de entrada
+        self.inputs = {}
 
-        self.nameEntry = ctk.CTkEntry(self, placeholder_text="Flúor-18")
-        self.nameEntry.grid(row=0, column=1, columnspan=3, padx=20, pady=20, sticky="ew")
+        # Labels e inputs
+        # id:int, nome:string, tipo:string, doseConcentracao:float, horaChegada:float, horaAdministracao:float, tempoMeiaVida:float, 
+        # laboratorio:string, contraIndicacao:string, df : pd.DataFrame
+        self.create_label_and_entry("ID do Radiofarmaco:", "id")
+        self.create_label_and_entry("Nome do Radiofarmaco:", "nome")
+        self.create_label_and_entry("Tipo:", "tipo")
+        self.create_label_and_entry("Concentracao da Dose (mCi - micro curie)", "doseConcentracao")
+        self.create_label_and_entry("Hora da chegada:", "horaChegada")
+        self.create_label_and_entry("Hora da admnistracao:", "horaAdministracao")
+        self.create_label_and_entry("Tempo de meia vida:", "tempoMeiaVida")
+        self.create_label_and_entry("Laboratorio:", "laboratorio")
+        self.create_label_and_entry("Contra indicacao:", "contraIndicacao")
 
-        #Botão para inclusão do radiofármaco na base de dados (csv)
-        self.addRadiopharmaceutical = ctk.CTkButton(self, text="Adicionar Radiofármaco", anchor="center", command=super().show_message("teste"))
-        self.addRadiopharmaceutical.grid(row=5, column=1, columnspan=2, padx=20, pady=20, sticky="ew")
+        # Botão para criar o objeto
+        self.submit_button = ctk.CTkButton(self, text="Cadastrar Atendimento", command=self.cadastrar)
+        self.submit_button.pack(pady=20)
+
+    def create_label_and_entry(self, label_text, attribute_name):
+        label = ctk.CTkLabel(self, text=label_text)
+        label.pack(pady=5)
+        entry = ctk.CTkEntry(self)
+        entry.pack(pady=5)
+        self.inputs[attribute_name] = entry
+    
+    def getObject(self):
+        return Radiofarmaco_Model(self.inputs["id"].get(), self.inputs["nome"].get(), self.inputs["tipo"].get(), self.inputs["doseConcentracao"].get(), self.inputs["horaChegada"].get(), self.inputs["horaAdministracao"].get(), self.inputs["tempoMeiaVida"].get(), self.inputs["laboratorio"].get(), self.inputs["contraIndicacao"].get())
+
+    def cadastrar(self):
+        objDict = self.getObject().__dict__
+        self.controller.create(objDict)

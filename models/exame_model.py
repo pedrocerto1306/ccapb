@@ -15,8 +15,5 @@ class Exame_Model(Model_Base):
             f"Exame ID: {self.id_exame}, Nome: {self.nome_exame}\n"
             f"Descrição: {self.descricao}\n"
             f"Data de Realização: {self.data_realizacao.strftime('%d/%m/%Y %H:%M')}\n"
-            f"Radiofármaco: {self.radiofarmaco_utilizado}, Dose: {self.dose_radiofarmaco} MBq\n"
-            f"Concentração Inicial: {self.concentracao_radiofarmaco} µCi/mL\n"
-            f"Tempo para Medição: {self.tempo_para_inicio_medida} minutos\n"
-            f"Concentração Restante: {self.calcular_decaimento_radioativo():.2f} µCi/mL"
+            f"Radiofármaco: {self.id_radiofarmaco}"
         )

@@ -9,7 +9,7 @@ class Base_View(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Sistema de Radiofármacos")
-        self.geometry("1080x720")
+        self.geometry("1080x750")
         # Frame atual
         self.current_frame = None
 
