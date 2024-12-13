@@ -2,11 +2,11 @@ import pandas as pd
 import string
 import numpy as np
 from models.model_base import *
+from models.paciente_model import Paciente_Model
 
 class Radiofarmaco_Model(Model_Base):
-  def __init__(self, id:int, nome:string, tipo:string, doseConcentracao:float, horaChegada:float, horaAdministracao:float, tempoMeiaVida:float, laboratorio:string, contraIndicacao:string, df : pd.DataFrame):
-    super().__init__(df)
-    self.id = id
+  def __init__(self, id:int, nome:string, tipo:string, doseConcentracao:float, horaChegada:float, horaAdministracao:float, tempoMeiaVida:float, laboratorio:string, contraIndicacao:string):
+    super().__init__(id)
     self.nome = nome
     self.tipo = tipo
     self.doseConcentracao = doseConcentracao        #Medido em mCi (micro curie)
@@ -16,7 +16,7 @@ class Radiofarmaco_Model(Model_Base):
     self.laboratorio = laboratorio                  #Nome do laboratório que produz o medicamento
     self.contraIndicacao = contraIndicacao          #Lista de casos contra indicados (ex: suspeita de dengue)
     self.atividadeRemanescente = calcularAtividade(self)
-    self.decaimento = calculaDecaimento(self)
+    self.decaimento = calcular_decaimento_radioativo(self)
     
 
     # Função para calcular a atividade remanescente do radiofármaco
@@ -28,35 +28,20 @@ class Radiofarmaco_Model(Model_Base):
         atividade_remanescente = atividade_inicial * np.exp(fator_exponencial) #Para calcular a atividade remanescente
         return atividade_remanescente
     
-    #Mudar esse método para a classe paciente
-    def calcular_tempo_afastamento(self, paciente: Paciente_Model): #meia_vida_horas, idade, atividade_desejada, peso_kg, altura_m
-        meia_vida_dias = self.tempoMeiaVida / 24
-        if paciente.idade <= 10:
-            fator_idade = 5
-        elif paciente.idade >= 66:
-            fator_idade = 1
-        else:
-            fator_idade = 0.5
-        tempo_afastamento = (1 / meia_vida_dias) * fator_idade * paciente.atividade_desejada * paciente.peso * paciente.altura
-        tempo_afastamento = max(1, min(20, tempo_afastamento))
-        return tempo_afastamento
-
-    def calculaDecaimento(self):
-        #TODO: Requisição à calculadora atomica de decaimento: https://sbmn.org.br/calculadora/
-        return 0
+    def calcular_decaimento_radioativo(self):
+        """
+        Calcula a concentração restante do radiofármaco no momento da medição,
+        com base na fórmula de decaimento radioativo: N(t) = N0 * (1/2)^(t/T).
         
-    def addRadioFarmaco(self, dfRadio:pd.DataFrame):
-        #TODO: Migrar para arquitetura MVC criada
-        registroRadiofarmaco = { 
-            'id': self.id,
-            'nome': self.nome, 
-            'tipo': self.tipo, 
-            'doseConcentracao': self.doseConcentracao, 
-            'horaAdministracao': self.horaAdministracao, 
-            'horaAdministracao': self.horaAdministracao, 
-            'laboratorio': self.laboratorio, 
-            'contraIndicacao': self.contraIndicacao, 
-            'decaimento': self.decaimento 
-        }
-        dfRadio._append(registroRadiofarmaco, ignore_index=True)
-        return dfRadio
+        Returns:
+            float: Concentração restante do radiofármaco após o tempo para início da medida.
+        """
+        
+        tempo = self.horaAdministracao
+        meia_vida = self.tempoMeiaVida
+        if tempo <= 0 or meia_vida <= 0:
+            return self.doseConcentracao
+
+        # Fórmula de decaimento: N(t) = N0 * (1/2)^(t/T)
+        concentracao_restante = self.doseConcentracao * (0.5 ** (tempo / meia_vida))
+        return concentracao_restante
