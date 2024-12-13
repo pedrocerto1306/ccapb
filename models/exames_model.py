@@ -1,62 +1,56 @@
 import uuid
+from typing import List, Dict, Any
 
 class Exame:
-  def __init__(self, nome: str, radiofarmaco_id, dosagem: float):
-    # TODO randomizar self id
-    self.nome = nome
-    self.radiofarmaco_id = radiofarmaco_id
-    self.dosagem = dosagem
+    def __init__(self, nome: str, radiofarmaco_id: str, dosagem: float):
+        self.id = str(uuid.uuid4())
+        self.nome = nome
+        self.radiofarmaco_id = radiofarmaco_id
+        self.dosagem = dosagem
 
-  def criarExame(self):
-    id = uuid.uuid4()
+    def criarExame(self) -> Dict[str, Any]:
+        exame = {
+            'id': self.id,
+            'nome': self.nome,
+            'radiofarmaco_id': self.radiofarmaco_id,
+            'dosagem': self.dosagem
+        }
+        return exame
 
-    exame = {
-      id: id,
-      nome: self.nome,
-      radiofarmaco_id: self.radiofarmaco_id,
-      dosagem: self.dosagem
-    }
+    def visualizarExame(self, id: str) -> Dict[str, Any]:
+        exame = {
+            'nome': self.nome,
+            'radiofarmaco_id': self.radiofarmaco_id,
+            'dosagem': self.dosagem
+        }
+        return exame
 
-    return exame;
+    def alterarExame(self, id: str, nome: str = '', radiofarmaco_id: str = '', dosagem: float = 0) -> Dict[str, Any]:
+        df_exames: List[Dict[str, Any]] = []
 
-  def visualizarExame(self, id):
-      exame = {
-          nome: self.nome
-          radiofarmaco_id = self.radiofarmaco_id
-          dosagem = self.dosagem
-      }
-      return exame
+        exame = next((e for e in df_exames if e['id'] == id), None)
+        if not exame:
+            raise ValueError(f"Exame with id {id} not found")
 
+        novo_exame = {
+            'nome': exame['nome'],
+            'radiofarmaco_id': exame['radiofarmaco_id'],
+            'dosagem': exame['dosagem']
+        }
 
-  def alterarExame(self, id, nome: str = '', radiofarmaco_id: str = '', dosagem: float = 0):
-    # TODO acessa df de exames
-    df_exames = []
+        if nome:
+            novo_exame['nome'] = nome
+        if radiofarmaco_id:
+            novo_exame['radiofarmaco_id'] = radiofarmaco_id
+        if dosagem:
+            novo_exame['dosagem'] = dosagem
 
-    # busca exame por id na df
-    exame = df_exames[id]
-    novo_exame = {
-        nome: exame.nome
-        radiofarmaco_id: exame.radiofarmaco.id
-        dosagem: exame.dosagem
-    }
+        index = df_exames.index(exame)
+        df_exames[index] = novo_exame
 
-    if nome {
-       novo_exame.nome: nome
-    }
-    if radiofarmaco_id {
-        novo_exame.radiofarmaco_id: radiofarmaco.id
-    }
-    if dosagem {
-        novo_exame.dosagem: dosagem
-    }
+        return novo_exame
 
-    df_exames.replace((exame, novo_exame))
-
-    return df_exames[id]
-
-  def removerExame(self, id):
-    # TODO acessa df de exames
-    df_exames = []
-    df_exames.drop(df_exames.index[[id]])
-
-    return;
+    def removerExame(self, id: str) -> None:
+        df_exames: List[Dict[str, Any]] = []
+        df_exames = [e for e in df_exames if e['id'] != id]
+        return None
